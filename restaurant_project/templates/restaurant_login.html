@@ -1,0 +1,18 @@
+<!-- restaurant_login.html -->
+<!DOCTYPE html>
+<html lang="en">
+{% load rest_framework %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Login</title>
+</head>
+<body>
+    <h1>Restaurant Login</h1>
+    <form action="{% url 'restaurants-login' %}" method="post" novalidate>
+        {% csrf_token %}
+        {% render_form serializers  template_pack='rest_framework/vertical' %}
+        <button type="submit" class="btn btn-default">Sign in</button>
+    </form>
+</body>
+</html>
