@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Restaurant Menu</title>
+</head>
+<body>
+    <h1>Menu Page</h1>
+    <ul>
+        {% for menu in serializers %}
+            <li>{{ menu.menu_name }}</li>  <!-- Update based on your menu model -->
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -1,7 +1,10 @@
 # restaurants/admin.py
 from django.contrib import admin
-from .models import Cuisine, Dish, Restaurant
+from .models import *
 
-admin.site.register(Cuisine)
+
+admin.site.register(MenuType)
 admin.site.register(Dish)
 admin.site.register(Restaurant)
+admin.site.register(RestaurantMenu)
+admin.site.register(MenuDish)

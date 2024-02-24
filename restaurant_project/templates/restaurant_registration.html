@@ -12,14 +12,6 @@
     <form action="{% url 'restaurants-register'%}" method="post">
         {% csrf_token %}
         {% render_form serializers %}
-        {% for cuisine in cuisines %}
-            <label>
-                <input type="checkbox" name="cuisines" value="{{ cuisine.id }}">
-                {{ cuisine.name }}
-            </label><br>
-        {% endfor %}
-        <label for="new_cuisine">New Cuisine:</label>
-        <input type="text" name="new_cuisine" id="new_cuisine">
         <button type="submit">Register</button>
     </form>
 </body>

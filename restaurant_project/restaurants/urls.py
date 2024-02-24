@@ -10,6 +10,8 @@ urlpatterns = [
     path('restaurants_login', RestaurantLogin.as_view(), name='restaurants-login'),
     # path('restaurants_login/<int:pk>', RestaurantLogin.as_view(), name='restaurants-login'),
 
+    path('restaurants_menu/<int:pk>', RestaurantOwnMenuAPI.as_view(), name='restaurants-menu'),
+
 
     path('restaurants_list', RestaurantListView.as_view(), name='restaurant-list'),
 ]
