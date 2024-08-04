@@ -2,7 +2,6 @@ from django.contrib.auth.hashers import make_password
 from django.db import models
 
 
-
 class MenuType(models.Model):
     menu_type_id = models.AutoField(primary_key=True)
     menu_name = models.CharField(max_length=255, unique=True)
@@ -49,7 +48,6 @@ class RestaurantMenu(models.Model):
 class MenuDish(models.Model):
     menu = models.ForeignKey(RestaurantMenu, on_delete=models.CASCADE)
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
-
 
     class Meta:
         unique_together = ('menu', 'dish')

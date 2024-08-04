@@ -43,30 +43,21 @@ class RestaurantLogin(APIView):
         serializers = RestaurantLoginSerializer()
         return Response({'serializers': serializers})
 
-    # def post(self, request):
-    #     serializer = RestaurantLoginSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return redirect('restaurants-home')
-    #     else:
-    #         return Response({'serializers': serializer})
-
     def post(self, request):
         serializer = RestaurantLoginSerializer(data=request.data)
         if serializer.is_valid():
-            username = serializer.validated_data['username']
+            username = serializer.validated_data['restaurant_name']
             password = serializer.validated_data['password']
             try:
                 restaurant = Restaurant.objects.get(restaurant_name=username)
                 if check_password(password, restaurant.password):
                     return redirect('restaurants-menu', pk=restaurant.pk)
-                    # return Response({'message': 'Authentication successful'}, status=status.HTTP_200_OK)
                 else:
                     return Response({'serializers': 'Invalid password'}, status=status.HTTP_401_UNAUTHORIZED)
             except Restaurant.DoesNotExist:
                 return Response({'serializers': 'Invalid username'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
-            return Response({'serializers': 'Invalid username'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'serializers': 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RestaurantOwnMenuAPI(APIView):
@@ -77,8 +68,15 @@ class RestaurantOwnMenuAPI(APIView):
     def get(self, request, pk):
         try:
             restaurant = Restaurant.objects.get(pk=pk)
-            serializers = restaurant.menus.all()
-            return Response({'serializers': serializers}, status=status.HTTP_200_OK)
+            serializer = restaurant.menus.all()
+            print(serializer,'<------1')
+            return Response({'serializers': serializer}, status=status.HTTP_200_OK)
+        except:
+            return Response({'serializers': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, pk):
+        try:
+            pass
         except:
             return Response({'serializers': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
