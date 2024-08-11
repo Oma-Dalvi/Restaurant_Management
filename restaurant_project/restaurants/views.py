@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.contrib.auth.hashers import check_password
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import logout,authenticate, login
 
 from .models import *
 from .serializers import *
@@ -50,7 +51,10 @@ class RestaurantLogin(APIView):
             password = serializer.validated_data['password']
             try:
                 restaurant = Restaurant.objects.get(restaurant_name=username)
+                # Manually check password
                 if check_password(password, restaurant.password):
+                    # Log in the user manually
+                    request.session['user_id'] = restaurant.pk
                     return redirect('restaurants-menu', pk=restaurant.pk)
                 else:
                     return Response({'serializers': 'Invalid password'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -58,6 +62,14 @@ class RestaurantLogin(APIView):
                 return Response({'serializers': 'Invalid username'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response({'serializers': 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RestaurantLogout(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        logout(request)
+        return redirect('restaurants-login')
 
 
 class RestaurantOwnMenuAPI(APIView):
@@ -69,7 +81,7 @@ class RestaurantOwnMenuAPI(APIView):
         try:
             restaurant = Restaurant.objects.get(pk=pk)
             serializer = restaurant.menus.all()
-            print(serializer,'<------1')
+            print(serializer, '<------1')
             return Response({'serializers': serializer}, status=status.HTTP_200_OK)
         except:
             return Response({'serializers': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)

@@ -3,13 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Restaurant Menu</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .logout-button {
+            margin-top: 20px;
+            background: linear-gradient(-135deg, #c850c0, #4158d0);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+        .logout-button:hover {
+            background: linear-gradient(-135deg, #b03fa8, #3648c2);
+        }
+    </style>
 </head>
 <body>
-    <h1>Menu Page</h1>
-    <ul>
-        {% for menu in serializers %}
-            <li>{{ menu.menu_name }}</li>  <!-- Update based on your menu model -->
-        {% endfor %}
-    </ul>
+    <div class="container">
+        <h1>Menu Page</h1>
+        <ul>
+            {% for menu in serializers %}
+                <li>{{ menu.menu_name }}</li>
+            {% endfor %}
+        </ul>
+        <form action="{% url 'restaurant-logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-button">Logout</button>
+        </form>
+    </div>
 </body>
 </html>
