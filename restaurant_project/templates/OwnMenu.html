@@ -54,7 +54,9 @@
         <h1>Menu Page</h1>
         <ul>
             {% for menu in serializers %}
-                <li>{{ menu.menu_name }}</li>
+                <li>
+                    <a href="{% url 'restaurants-menu-dishes' menu.id %}">{{ menu }}</a>
+                </li>
             {% endfor %}
         </ul>
         <form action="{% url 'restaurant-logout' %}" method="post">

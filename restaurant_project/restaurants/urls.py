@@ -12,7 +12,7 @@ urlpatterns = [
 
     path('restaurants_menu/<int:pk>', RestaurantOwnMenuAPI.as_view(), name='restaurants-menu'),
 
-    path('logout/', RestaurantLogout.as_view(), name='restaurant-logout'),
+    path('restaurants_menu/<int:menu_id>/dishes', RestaurantMenuDishesAPI.as_view(), name='restaurants-menu-dishes'),
 
-    path('restaurants_list', RestaurantListView.as_view(), name='restaurant-list'),
+    path('logout/', RestaurantLogout.as_view(), name='restaurant-logout'),
 ]

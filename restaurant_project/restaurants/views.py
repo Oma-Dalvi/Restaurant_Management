@@ -65,7 +65,7 @@ class RestaurantLogin(APIView):
 
 
 class RestaurantLogout(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def post(self, request):
         logout(request)
@@ -73,18 +73,27 @@ class RestaurantLogout(APIView):
 
 
 class RestaurantOwnMenuAPI(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'OwnMenu.html'
 
     def get(self, request, pk):
         try:
+            restaurant = get_object_or_404(Restaurant, pk=pk)
+            menus = RestaurantMenu.objects.filter(restaurant=restaurant)
+            return Response({'serializers': menus}, status=status.HTTP_200_OK)
+        except:
+            return Response({'serializers': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+
+    '''
+    def get(self, request, pk):
+        try:
             restaurant = Restaurant.objects.get(pk=pk)
             serializer = restaurant.menus.all()
-            print(serializer, '<------1')
             return Response({'serializers': serializer}, status=status.HTTP_200_OK)
         except:
             return Response({'serializers': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+    '''
 
     def post(self, request, pk):
         try:
@@ -93,12 +102,19 @@ class RestaurantOwnMenuAPI(APIView):
             return Response({'serializers': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class RestaurantListView(APIView):
+class RestaurantMenuDishesAPI(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'menu_dishes.html'
 
-    def get(self, request):
-        try:
-            queryset = Restaurant.objects.all()
-            serializer = RestaurantSerializer(queryset, many=True)
-            return Response({"data": serializer.data, "status": status.HTTP_201_CREATED})
-        except:
-            return Response({"error": serializer.errors, "status": status.HTTP_400_BAD_REQUEST})
+    def get(self, request, menu_id):
+        menu = get_object_or_404(RestaurantMenu, pk=menu_id)
+        dishes = MenuDish.objects.filter(menu=menu)
+        return Response({'menu': menu, 'dishes': dishes})
+
+
+
+
+
+
+
+

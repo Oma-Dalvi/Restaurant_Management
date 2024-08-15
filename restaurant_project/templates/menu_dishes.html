@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dishes</title>
+    <style>
+        /* Your styles */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dishes for {{ menu.menu_type.menu_name }}</h1>
+        <ul>
+            {% for dish in dishes %}
+                <li>{{ dish.dish.name }}</li>
+            {% endfor %}
+        </ul>
+        <form action="{% url 'restaurant-logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-button">Logout</button>
+        </form>
+    </div>
+</body>
+</html>
