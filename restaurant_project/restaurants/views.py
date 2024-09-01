@@ -5,7 +5,8 @@ from rest_framework import status
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.contrib.auth.hashers import check_password
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import logout,authenticate, login
+from django.contrib.auth import logout, authenticate, login
+from django.contrib import messages
 
 from .models import *
 from .serializers import *
@@ -73,33 +74,57 @@ class RestaurantLogout(APIView):
 
 
 class RestaurantOwnMenuAPI(APIView):
-    # permission_classes = [IsAuthenticated]
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'OwnMenu.html'
 
     def get(self, request, pk):
-        try:
-            restaurant = get_object_or_404(Restaurant, pk=pk)
-            menus = RestaurantMenu.objects.filter(restaurant=restaurant)
-            return Response({'serializers': menus}, status=status.HTTP_200_OK)
-        except:
-            return Response({'serializers': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+        restaurant = get_object_or_404(Restaurant, pk=pk)
+        menus = RestaurantMenu.objects.filter(restaurant=restaurant).select_related('menu_type')
+        menu_data = [{'id': menu.id, 'name': menu.menu_type.menu_name} for menu in menus]
+        return Response({'restaurant': restaurant, 'menus': menu_data}, status=status.HTTP_200_OK)
 
-    '''
+
+class AddRestaurantMenuAPI(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'add_menu.html'
+
     def get(self, request, pk):
-        try:
-            restaurant = Restaurant.objects.get(pk=pk)
-            serializer = restaurant.menus.all()
-            return Response({'serializers': serializer}, status=status.HTTP_200_OK)
-        except:
-            return Response({'serializers': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
-    '''
+        restaurant = get_object_or_404(Restaurant, pk=pk)
+        return Response({'restaurant': restaurant, 'menu_types': MenuType.objects.all()})
 
     def post(self, request, pk):
         try:
-            pass
-        except:
-            return Response({'serializers': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+            restaurant = get_object_or_404(Restaurant, pk=pk)
+            menu_type_id = request.data.get('menu_type_id')
+            new_menu_type_name = request.data.get('new_menu_type')
+
+            if new_menu_type_name:
+                # Create new MenuType if provided
+                menu_type, created = MenuType.objects.get_or_create(menu_name=new_menu_type_name)
+            elif menu_type_id:
+                # Use existing MenuType
+                menu_type = get_object_or_404(MenuType, pk=menu_type_id)
+            else:
+                return Response({'error': 'Please select an existing menu type or provide a new one.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            # Check if the menu already exists for this restaurant
+            if RestaurantMenu.objects.filter(restaurant=restaurant, menu_type=menu_type).exists():
+                return Response({'error': 'This menu already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Create the new menu
+            RestaurantMenu.objects.create(restaurant=restaurant, menu_type=menu_type)
+            return redirect('restaurants-menu', pk=restaurant.pk)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RestaurantMenuDeleteAPIView(APIView):
+    def post(self, request, menu_id, *args, **kwargs):
+        menu = get_object_or_404(RestaurantMenu, id=menu_id)
+        menu.delete()
+        return redirect('restaurants-menu')
 
 
 class RestaurantMenuDishesAPI(APIView):
@@ -112,9 +137,26 @@ class RestaurantMenuDishesAPI(APIView):
         return Response({'menu': menu, 'dishes': dishes})
 
 
+class AddDishToMenuAPI(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'add_dish.html'
+
+    def get(self, request, menu_id):
+        menu = get_object_or_404(RestaurantMenu, pk=menu_id)
+        return Response({'menu': menu})
+
+    def post(self, request, menu_id):
+        menu = get_object_or_404(RestaurantMenu, pk=menu_id)
+        dish_name = request.data.get('dish_name')
+        dish, created = Dish.objects.get_or_create(name=dish_name)
+
+        if not MenuDish.objects.filter(menu=menu, dish=dish).exists():
+            MenuDish.objects.create(menu=menu, dish=dish)
+        return redirect('restaurants-menu-dishes', menu_id=menu.id)
 
 
-
-
-
-
+class RestaurantDishDeleteAPI(APIView):
+    def post(self, request, menu_id, dish_id, *args, **kwargs):
+        menu_dish = get_object_or_404(MenuDish, menu_id=menu_id, dish_id=dish_id)
+        menu_dish.delete()
+        return redirect('restaurants-menu-dishes', menu_id=menu_id)
