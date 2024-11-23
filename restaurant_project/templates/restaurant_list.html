@@ -1,4 +1,3 @@
-<!-- restaurant_list.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,49 +11,179 @@
             margin: 0;
             padding: 20px;
         }
+
         .restaurant-list {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
+
         .restaurant-list h1 {
             text-align: center;
             margin-bottom: 20px;
+            color: #333;
         }
+
+        .search-container {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
         .restaurant-item {
             border-bottom: 1px solid #e0e0e0;
-            padding: 10px 0;
+            padding: 15px 0;
+            transition: background-color 0.2s;
         }
+
+        .restaurant-item:hover {
+            background-color: #f8f9fa;
+        }
+
         .restaurant-item:last-child {
             border-bottom: none;
         }
+
         .restaurant-link {
             text-decoration: none;
             color: #007bff;
+            transition: color 0.2s;
         }
+
         .restaurant-link:hover {
+            color: #0056b3;
             text-decoration: underline;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #666;
+            padding: 20px;
         }
     </style>
 </head>
+
 <body>
     <div class="restaurant-list">
         <h1>Restaurants</h1>
-        {% if data %}
-            {% for restaurant in data %}
-                <div class="restaurant-item">
+        <div class="search-container">
+            <input 
+                type="text" 
+                id="search-input" 
+                class="search-input" 
+                placeholder="Search restaurants..."
+                autocomplete="off"
+            >
+        </div>
+        <div id="restaurant-results">
+            {% if data %}
+                {% for restaurant in data %}
+                <div class="restaurant-item" data-id="{{ restaurant.restaurant_id }}">
                     <h2>
                         <a href="{% url 'restaurants-menu' restaurant.restaurant_id %}" class="restaurant-link">
                             {{ restaurant.restaurant_name }}
                         </a>
                     </h2>
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>No restaurants available.</p>
-        {% endif %}
+                {% endfor %}
+            {% else %}
+                <p class="no-results">No restaurants available.</p>
+            {% endif %}
+        </div>
     </div>
+
+    {% comment %} Pass data to JavaScript using Django's json_script filter {% endcomment %}
+    {{ data|json_script:"restaurant-data" }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize variables
+            const searchInput = document.getElementById('search-input');
+            const resultsContainer = document.getElementById('restaurant-results');
+            
+            // Get data from the JSON script tag
+            let restaurantData = [];
+            try {
+                restaurantData = JSON.parse(document.getElementById('restaurant-data').textContent);
+            } catch (error) {
+                console.error('Error parsing restaurant data:', error);
+                resultsContainer.innerHTML = '<p class="no-results">Error loading restaurants.</p>';
+                return;
+            }
+
+            // Debounce function
+            function debounce(func, wait) {
+                let timeout;
+                return function(...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            }
+
+            // Create HTML for a restaurant
+            function createRestaurantHTML(restaurant) {
+                const name = escapeHtml(restaurant.restaurant_name);
+                const id = escapeHtml(restaurant.restaurant_id);
+                return `
+                    <div class="restaurant-item" data-id="${id}">
+                        <h2>
+                            <a href="/restaurants/menu/${id}" class="restaurant-link">
+                                ${name}
+                            </a>
+                        </h2>
+                    </div>
+                `;
+            }
+
+            // Escape HTML
+            function escapeHtml(unsafe) {
+                return unsafe.toString()
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            // Filter restaurants
+            const filterRestaurants = debounce((searchTerm) => {
+                const normalizedSearchTerm = searchTerm.toLowerCase().trim();
+                
+                const filteredRestaurants = restaurantData.filter(restaurant => 
+                    restaurant.restaurant_name.toLowerCase().includes(normalizedSearchTerm)
+                );
+
+                if (filteredRestaurants.length === 0) {
+                    resultsContainer.innerHTML = '<p class="no-results">No restaurants found matching your search.</p>';
+                    return;
+                }
+
+                resultsContainer.innerHTML = filteredRestaurants
+                    .map(restaurant => createRestaurantHTML(restaurant))
+                    .join('');
+            }, 300);
+
+            // Add event listener for search input
+            searchInput.addEventListener('input', (event) => {
+                filterRestaurants(event.target.value);
+            });
+        });
+    </script>
 </body>
 </html>

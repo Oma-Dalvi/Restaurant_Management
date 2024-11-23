@@ -78,3 +78,11 @@ class CustomerLogout(APIView):
     def post(self, request):
         logout(request)
         return redirect('restaurants-login')
+
+
+class SearchBar(APIView):
+    def post(self, request):
+        try:
+            pass
+        except Exception as ex:
+            return Response({"status": status.HTTP_400_BAD_REQUEST})
