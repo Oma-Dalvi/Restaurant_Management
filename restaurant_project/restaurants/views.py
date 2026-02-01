@@ -147,12 +147,21 @@ class AddDishToMenuAPI(APIView):
 
     def post(self, request, menu_id):
         menu = get_object_or_404(RestaurantMenu, pk=menu_id)
-        dish_name = request.data.get('dish_name')
-        dish, created = Dish.objects.get_or_create(name=dish_name)
 
-        if not MenuDish.objects.filter(menu=menu, dish=dish).exists():
-            MenuDish.objects.create(menu=menu, dish=dish)
-        return redirect('restaurants-menu-dishes', menu_id=menu.id)
+        serializer = MenuDishCreateSerializer(
+            data=request.data,
+            context={'menu': menu}
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return redirect('restaurants-menu-dishes', menu_id=menu.id)
+
+        # If validation fails
+        return Response(
+            {'menu': menu, 'errors': serializer.errors},
+            status=400
+        )
 
 
 class RestaurantDishDeleteAPI(APIView):

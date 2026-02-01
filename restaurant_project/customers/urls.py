@@ -8,5 +8,5 @@ urlpatterns = [
 
     path('restaurant_list', RestaurantListApi.as_view(), name='restaurant-list'),
 
-    path('search-bar',SearchBar.as_view(), name='search-bar')
+    path('restaurant/<int:restaurant_id>/menu/',SearchRestaurantMenuAPI.as_view(), name='customer-restaurant-menu')
 ]

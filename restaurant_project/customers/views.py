@@ -1,5 +1,5 @@
 from django.contrib.auth import logout
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer
@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from django.contrib.auth.hashers import check_password
 
 from .serializers import *
-from restaurants.models import Restaurant
+from restaurants.models import Restaurant, RestaurantMenu
 from .serializers import RestaurantListSerializer
 
 
@@ -80,9 +80,12 @@ class CustomerLogout(APIView):
         return redirect('restaurants-login')
 
 
-class SearchBar(APIView):
-    def post(self, request):
-        try:
-            pass
-        except Exception as ex:
-            return Response({"status": status.HTTP_400_BAD_REQUEST})
+class SearchRestaurantMenuAPI(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'restaurant_menu.html'
+
+    def get(self, request, restaurant_id):
+        restaurant = get_object_or_404(Restaurant, pk=restaurant_id)
+        menus = RestaurantMenu.objects.filter(restaurant=restaurant).select_related('menu_type')
+        menu_data = [{'menu_type': menu.menu_type.menu_name} for menu in menus]
+        return Response({'restaurant': restaurant, 'menus': menu_data})

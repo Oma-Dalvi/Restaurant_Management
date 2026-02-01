@@ -99,3 +99,39 @@ class RestaurantOwnMenuSerializer(serializers.ModelSerializer):
     class Meta:
         model = RestaurantMenu
         fields = '__all__'
+
+
+
+class MenuDishCreateSerializer(serializers.ModelSerializer):
+    dish_name = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = MenuDish
+        fields = [
+            'dish_name',
+            'description',
+            'price',
+            'image',
+            'is_veg',
+            'is_available',
+        ]
+
+    def create(self, validated_data):
+        dish_name = validated_data.pop('dish_name')
+        menu = self.context['menu']
+
+        dish, _ = Dish.objects.get_or_create(name=dish_name)
+
+        menu_dish, created = MenuDish.objects.get_or_create(
+            menu=menu,
+            dish=dish,
+            defaults=validated_data
+        )
+
+        if not created:
+            # update existing dish if already added
+            for key, value in validated_data.items():
+                setattr(menu_dish, key, value)
+            menu_dish.save()
+
+        return menu_dish
