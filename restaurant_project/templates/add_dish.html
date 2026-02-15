@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Dish</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f0f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .submit-button {
+            background: linear-gradient(-135deg, #c850c0, #4158d0);
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            width: 100%;
+        }
+
+        .submit-button:hover {
+            background: linear-gradient(-135deg, #b03fa8, #3648c2);
+        }
+
+        .go-back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #ffffff;
+            color: #6d5b97;
+            padding: 8px 18px;
+            border: 2px solid #6d5b97;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95em;
+            z-index: 1000;
+        }
+
+        .go-back-button:hover {
+            background: #6d5b97;
+            color: #ffffff;
+        }
+
+        .restaurant-name {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #333333;
+            z-index: 900;
+        }
+        .logout-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #6d5b97, #8e7cc3);
+            color: #ffffff;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: background 0.3s ease;
+            z-index: 1000; /* stays above everything */
+        }
+
+        .logout-button:hover {
+            background: linear-gradient(135deg, #8e7cc3, #6d5b97);
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <button class="go-back-button" onclick="window.history.back()">← Go Back</button>
+    <div class="restaurant-name">
+        {{ menu.restaurant.restaurant_name }}
+    </div>
+
+
+    <div class="container">
+        <h1>Add Dish to {{ menu.menu_type.menu_name }}</h1>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Dish Name</label>
+                <input type="text" name="dish_name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Price (₹)</label>
+                <input type="number" name="price" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label>Dish Image</label>
+                <input type="file" name="image" accept="image/*">
+            </div>
+
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" name="is_veg" checked>
+                    Veg
+                </label>
+
+                <label>
+                    <input type="checkbox" name="is_available" checked>
+                    Available
+                </label>
+            </div>
+
+            <button type="submit" class="submit-button">Add Dish</button>
+        </form>
+    </div>
+    <form action="{% url 'restaurant-logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="logout-button">Logout</button>
+    </form>
+
+</body>
+
+</html>

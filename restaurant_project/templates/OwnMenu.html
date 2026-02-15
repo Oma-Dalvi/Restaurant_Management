@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Restaurant Menu</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Align delete button to the right */
+        }
+        li a {
+            text-decoration: none; /* Remove underline */
+            color: #555; /* Use a color that matches the text */
+        }
+        li a:hover {
+            color: #333; /* Change color on hover for visual feedback */
+        }
+        .logout-button, .add-menu-button {
+            margin-top: 20px;
+            background: linear-gradient(-135deg, #c850c0, #4158d0);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+        .logout-button:hover, .add-menu-button:hover {
+            background: linear-gradient(-135deg, #b03fa8, #3648c2);
+        }
+        .add-menu-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(-135deg, #c850c0, #4158d0);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+        .delete-button {
+            background: none;
+            border: none;
+            color: #ff4e50; /* Red color for the delete icon */
+            font-size: 1.2em; /* Slightly larger size */
+            cursor: pointer;
+            margin-left: 10px; /* Space between menu name and delete icon */
+            padding: 0;
+            transition: color 0.3s; /* Smooth transition effect */
+        }
+        .delete-button:hover {
+            color: #d43d3d; /* Darker red on hover */
+        }
+    </style>
+</head>
+<body>
+    <!-- Button to add a new menu -->
+    <a href="{% url 'add-restaurant-menu' restaurant.restaurant_id %}" class="add-menu-button">Add New Menu</a>
+
+    <div class="container">
+        <h1>Menu Page</h1>
+        <ul>
+            {% for menu in menus %}
+                <li>
+                    <a href="{% url 'restaurants-menu-dishes' menu.id %}">{{ menu.name }}</a>
+                    <!-- Form for deleting the menu -->
+                    <form action="{% url 'delete-restaurant-menu' menu.id %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-button" title="Delete Menu">&times;</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Logout button -->
+        <form action="{% url 'restaurant-logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-button">Logout</button>
+        </form>
+    </div>
+</body>
+</html>

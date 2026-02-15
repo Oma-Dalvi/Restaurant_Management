@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Menu</title>
+    <style>
+        /* Styling similar to the existing pages */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 400px;
+            position: relative;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group select,
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .submit-button {
+            margin-top: 20px;
+            background: linear-gradient(-135deg, #c850c0, #4158d0);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        .submit-button:hover {
+            background: linear-gradient(-135deg, #b03fa8, #3648c2);
+        }
+        .add-menu-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(-135deg, #c850c0, #4158d0);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+        .add-menu-button:hover {
+            background: linear-gradient(-135deg, #b03fa8, #3648c2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add New Menu</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="menu_type_id">Select Menu Type:</label>
+                <select id="menu_type_id" name="menu_type_id">
+                    <option value="">-- Select Existing Menu Type --</option>
+                    {% for menu_type in menu_types %}
+                        <option value="{{ menu_type.menu_type_id }}">{{ menu_type.menu_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="new_menu_type">Or Add New Menu Type:</label>
+                <input type="text" id="new_menu_type" name="new_menu_type" placeholder="Enter new menu type">
+            </div>
+            <button type="submit" class="submit-button">Add Menu</button>
+        </form>
+    </div>
+</body>
+</html>

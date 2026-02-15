@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Login</title>
+    <title>Customer Login</title>
     <style>
         /* Inline CSS as previously provided */
         * {
@@ -116,12 +116,12 @@
 </head>
 <body>
     <div class="wrapper">
-        <div class="title">Restaurant Login</div>
-        <form action="{% url 'restaurants-login' %}" method="post" novalidate>
+        <div class="title">Customer Login</div>
+        <form action="{% url 'customer-login' %}" method="post" novalidate>
             {% csrf_token %}
             <div class="field">
-                <input type="text" name="restaurant_name" required>
-                <label>Restaurant Name</label>
+                <input type="text" name="customer_name" required>
+                <label>Customer Name</label>
             </div>
             <div class="field">
                 <input type="password" name="password" required>
@@ -131,7 +131,7 @@
                 <input type="submit" value="Login">
             </div>
             <div class="signup-link">
-                Not a member? <a href="{% url 'restaurants-register' %}">Signup now</a>
+                Not a member? <a href="{% url 'customer-register' %}">Signup now</a>
             </div>
         </form>
     </div>

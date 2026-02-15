@@ -1,12 +1,10 @@
-<!--Restaurant Login Page-->
-
 <!DOCTYPE html>
 <html lang="en">
 {% load rest_framework %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Login</title>
+    <title>Customer Registration</title>
     <style>
         /* Inline CSS as previously provided */
         * {
@@ -116,22 +114,22 @@
 </head>
 <body>
     <div class="wrapper">
-        <div class="title">Restaurant Login</div>
-        <form action="{% url 'restaurants-login' %}" method="post" novalidate>
+        <div class="title">Customer Registration</div>
+        <form action="{% url 'customer-register' %}" method="post" novalidate>
             {% csrf_token %}
             <div class="field">
-                <input type="text" name="restaurant_name" required>
-                <label>Restaurant Name</label>
+                <input type="text" name="customer_name" required>
+                <label>Customer Name</label>
             </div>
             <div class="field">
                 <input type="password" name="password" required>
                 <label>Password</label>
             </div>
             <div class="field">
-                <input type="submit" value="Login">
+                <input type="submit" value="Register">
             </div>
             <div class="signup-link">
-                Not a member? <a href="{% url 'restaurants-register' %}">Signup now</a>
+                Already a member? <a href="{% url 'customer-login' %}">Login now</a>
             </div>
         </form>
     </div>
