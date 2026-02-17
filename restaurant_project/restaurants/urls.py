@@ -20,7 +20,7 @@ urlpatterns = [
 
     path('restaurants_menu/<int:menu_id>/add_dish', AddDishToMenuAPI.as_view(), name='add-dish-to-menu'),
 
-    path('delete-dish/<int:menu_id>/', RestaurantDishDeleteAPI.as_view(), name='delete-dish'),
+    path('delete-dish/<int:menu_dish_id>/', RestaurantDishDeleteAPI.as_view(), name='delete-dish'),
 
 
     path('logout/', RestaurantLogout.as_view(), name='restaurant-logout'),

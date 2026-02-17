@@ -123,8 +123,9 @@ class AddRestaurantMenuAPI(APIView):
 class RestaurantMenuDeleteAPIView(APIView):
     def post(self, request, menu_id, *args, **kwargs):
         menu = get_object_or_404(RestaurantMenu, id=menu_id)
+        restaurant_id = menu.restaurant.restaurant_id
         menu.delete()
-        return redirect('restaurants-menu')
+        return redirect('restaurants-menu', pk=restaurant_id)
 
 
 class RestaurantMenuDishesAPI(APIView):
@@ -165,7 +166,8 @@ class AddDishToMenuAPI(APIView):
 
 
 class RestaurantDishDeleteAPI(APIView):
-    def post(self, request, menu_id, dish_id, *args, **kwargs):
-        menu_dish = get_object_or_404(MenuDish, menu_id=menu_id, dish_id=dish_id)
+    def post(self, request, menu_id, *args, **kwargs):
+        menu_dish = get_object_or_404(MenuDish, id=menu_id)
+        restaurant_menu_id = menu_dish.menu.id
         menu_dish.delete()
-        return redirect('restaurants-menu-dishes', menu_id=menu_id)
+        return redirect('restaurants-menu-dishes', menu_id=restaurant_menu_id)
